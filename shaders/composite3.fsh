@@ -18,35 +18,7 @@ float map(float value, float min1, float max1, float min2, float max2) {
   return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
 }
 
-/*
-vec2 ParallaxOcclusionMapping( sampler2D depthMap, vec2 uv, vec2 displacement, float pivot ) {
-	float layerDepth = (1.0 / layers);
-	float currentLayerDepth = 0.0;
 
-	vec2 deltaUv = displacement / layers;
-	vec2 currentUv = uv + pivot * displacement;
-	float currentDepth = (1 - texture2D( depthMap, currentUv ).a) * 0.3;
-
-	for( int i = 0; i < layers; i++ ) {
-		if( currentLayerDepth > currentDepth )
-			break;
-
-		currentUv -= deltaUv;
-		currentDepth = texture2D( depthMap, currentUv ).a;
-		currentLayerDepth += layerDepth;
-	}
-
-	vec2 prevUv = currentUv + deltaUv;
-	float endDepth = currentDepth - currentLayerDepth;
-	float startDepth =
-		texture2D( depthMap, prevUv ).a - currentLayerDepth + layerDepth;
-	float w = (endDepth / ( endDepth - startDepth ));
-	
-	//return texcoord.st;
-
-	return mix( prevUv, currentUv, 0.85 * w );
-}
-*/
 vec2 ParallaxOcclusionMapping( sampler2D depthMap, vec2 uv, vec2 displacement, float pivot ) {
 	float layerDepth = 1.0 /  layers;
 	float currentLayerDepth = 0.0;
