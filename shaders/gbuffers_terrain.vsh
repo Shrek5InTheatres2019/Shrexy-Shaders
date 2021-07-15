@@ -12,7 +12,7 @@ uniform float frameTime;
 uniform sampler2D noisetex;
 uniform mat4 gbufferModelView;
 attribute vec2 mc_midTexCoord;  
-attribute vec3 mc_Entity;
+attribute float mc_Entity;
 const float PI = 3.14159265358979323846264338327950288419716939937510582097494459230781640628620899862803482534211706798214808;
 
 float rand(vec2 co){
@@ -27,7 +27,7 @@ void main(){
 
     bool isTop = texcoord.y < mc_midTexCoord.y;
     vec3 worldPos = (gbufferModelViewInverse * (gl_ModelViewMatrix * gl_Vertex)).xyz + cameraPosition;
-    if(mc_Entity.x == 10021 || (mc_Entity.x == 10022 && isTop) || (mc_Entity.x == 10023 && isTop) || mc_Entity.x == 10024){
+    if(mc_Entity == 10021 || (mc_Entity == 10022 && isTop) || (mc_Entity == 10023 && isTop) || mc_Entity == 10024){
         float magnitude = sin(worldTime * PI / 204) * 0.05;
         worldPos.x += sin((worldTime * (worldPos.x / 100)) * PI / 154) * magnitude;
         worldPos.z += sin((worldTime * (worldPos.y / 100)) * PI / 92) * magnitude;
