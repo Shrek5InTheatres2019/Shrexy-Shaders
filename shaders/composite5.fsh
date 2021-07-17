@@ -3,6 +3,7 @@
 uniform sampler2D colortex0;
 uniform sampler2D depthtex0;
 uniform sampler2D depthtex1;
+uniform sampler2D depthtex2;
 uniform sampler2D colortex4;
 
 uniform vec3 cameraPosition;   
@@ -12,7 +13,7 @@ uniform mat4 gbufferProjection;
 
 uniform float viewWidth;
 uniform float viewHeight;
-vec2 resolution = vec2(viewWidth, viewHeight);
+float resolution = viewWidth / viewHeight;
 
 uniform float near;
 uniform float far;
@@ -40,21 +41,21 @@ vec2 ParallaxOcclusionMapping( sampler2D depthMap, vec2 uv, vec2 displacement, f
 
 	vec2 deltaUv = displacement / layers;
 	vec2 currentUv = uv + pivot * displacement;
-	float currentDepth = (texture2D( depthMap, currentUv ).a * 0.5);
+	float currentDepth = texture2D( depthMap, currentUv ).a;
 
 	for( int i = 0; i < layers; i++ ) {
 		if( currentLayerDepth > currentDepth )
 			break;
 
 		currentUv -= deltaUv;
-		currentDepth = (texture2D( depthMap, currentUv ).a * 0.5);
+		currentDepth = texture2D( depthMap, currentUv ).a;
 		currentLayerDepth += layerDepth;
 	}
 
 	vec2 prevUv = currentUv + deltaUv;
 	float endDepth = currentDepth - currentLayerDepth;
 	float startDepth =
-		(texture2D( depthMap, currentUv ).a * 0.5) - currentLayerDepth + layerDepth;
+		texture2D( depthMap, currentUv ).a - currentLayerDepth + layerDepth;
 
 	float w = endDepth / ( endDepth - startDepth );
 
@@ -67,12 +68,23 @@ vec3 thing(float depth){
     return ((clip / clip.w).xyz);
 }
 
+vec3 fromWorldCoordsToScreenCoords(vec3 wc)
+{
+		vec4 pos0 = gl_ModelViewProjectionMatrix * vec4(wc, 1.0);
+	 	pos0 /= pos0.w;		
+		return pos0.xyz;
+}
 
-
+/*DRAWBUFFERS:0*/
 void main(void){
-    vec2 nice = ParallaxOcclusionMapping(colortex4, texcoord.st, thing(linearize_depth(texture2D(depthtex1, texcoord.st).r * 0.09, near, far)).xy * 0.25, 0.5);
+	vec3 ndc = fromWorldCoordsToScreenCoords(cameraPosition);
+	vec2 yo = -(ndc.xy / ndc.z);
 	
-    
-
-	gl_FragData[0] = texture2D(colortex0, nice);
+    vec2 nice = ParallaxOcclusionMapping(colortex4, texcoord.st, ndc.xy * 0.00001, 1.0);
+	float pom = texture2D(colortex4, texcoord.st).a;
+    if(pom == 0){
+		gl_FragData[0] = vec4(texture2D(colortex0, texcoord.st).rgb, 1.0);
+	}else{
+		gl_FragData[0] = vec4(texture2D(colortex0, nice).rgb, 1.0);
+	}
 }

@@ -50,7 +50,7 @@ vec3 detectEdges(){
 void main(void)
 {
 	vec3 diffuse = texture2D(colortex0, texcoord.st).rgb;
-    //diffuse = diffuse * detectEdges();
+    diffuse = diffuse * detectEdges();
 	gl_FragData[0] = vec4(diffuse, 1.0);
 	gl_FragData[1] = texture2D(colortex4, texcoord.st);
 }
