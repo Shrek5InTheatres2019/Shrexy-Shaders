@@ -28,9 +28,7 @@ mat3 sy = mat3(
 );
 
 
-void main(void)
-{
-	vec3 diffuse = texture2D(colortex0, texcoord.st).rgb;
+vec3 detectEdges(){
     mat3 I;
     for (int i=0; i<3; i++) {
         for (int j=0; j<3; j++) {
@@ -44,7 +42,15 @@ void main(void)
 	float gy = dot(sy[0], I[0]) + dot(sy[1], I[1]) + dot(sy[2], I[2]);
 
 	float g = sqrt(pow(gx, 2.0)+pow(gy, 2.0)) / EDGE_DETECTION_DIVISOR;
-	vec3 edgeColor = (vec3(1) - (vec3(g, g, g) * (1.9 - texture2D(depthtex0, texcoord.st).rgb))) ;
+	return (vec3(1) - (vec3(g, g, g) * (1.9 - texture2D(depthtex0, texcoord.st).rgb))) ;
+}
+
+/*DRAWBUFFERS:04*/
+
+void main(void)
+{
+	vec3 diffuse = texture2D(colortex0, texcoord.st).rgb;
+    diffuse = diffuse * detectEdges();
 	gl_FragData[0] = vec4(diffuse, 1.0);
-	gl_FragData[4] = texture2D(colortex4, texcoord.st);
+	gl_FragData[1] = texture2D(colortex4, texcoord.st);
 }

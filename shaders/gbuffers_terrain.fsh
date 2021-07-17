@@ -8,10 +8,12 @@ uniform sampler2D tex;
 uniform sampler2D normals;
 uniform sampler2D depthtex1;
 
+/*DRAWBUFFERS:04*/
+
 void main(){
     vec4 color = texture2D(tex, texcoord.st);
     vec4 normalMap = texture2D(normals, texcoord.st);
     color *= blockColor;
     gl_FragData[0] = color;
-    gl_FragData[4] = normalMap;
+    gl_FragData[1] = normalMap;
 }
